@@ -15,6 +15,20 @@ import styles from './styles';
 const Sidebar = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
+  const navigation = useNavigation();
+
+  const handlerHome = () => {
+    navigation.navigate('Home');
+  };
+
+  const handleDeliveryRegister = () => {
+    navigation.navigate('DeliveryRegisterScreen');
+  };
+
+  const handleQrCodeApproval = () => {
+    navigation.navigate('QrCodeApproval');
+  };
+
   return (
     <View style={styles.sidebar}>
       <View style={styles.sidebarUser}>
@@ -27,16 +41,16 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       <View style={styles.sidebarDivider} />
 
-      <ScrollView style={styles.sidebarMenu} contentContainerStyle={{flexGrow: 1, justifyContent: 'space-between'}}>
+      <ScrollView style={styles.sidebarMenu} contentContainerStyle={{ flexGrow: 1, justifyContent: 'space-between' }}>
         <View>
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={handlerHome}>
             <MaterialCommunityIcons name="clock-outline" size={24} color="white" />
             <Text style={styles.menuItemText}>Registros</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={handleDeliveryRegister}>
             <MaterialCommunityIcons name="truck-delivery-outline" size={24} color="white" />
-            <Text style={styles.menuItemText}>F. de entregas</Text>
+            <Text style={styles.menuItemText}>Fila de entregas</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem}>
@@ -44,7 +58,7 @@ const Sidebar = ({ isOpen, onClose }) => {
             <Text style={styles.menuItemText}>Relatórios</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.menuItem}>
+          <TouchableOpacity style={styles.menuItem} onPress={handleQrCodeApproval}>
             <MaterialCommunityIcons name="qrcode-scan" size={24} color="white" />
             <Text style={styles.menuItemText}>Aprovação{'\n'}QrCode</Text>
           </TouchableOpacity>
@@ -102,10 +116,10 @@ export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navigation = useNavigation();
-  
+
   const handlerEntryRegister = () => {
     navigation.navigate('EntryRegister');
-};
+  };
 
   return (
     <SafeAreaView style={styles.container}>
