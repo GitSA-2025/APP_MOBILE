@@ -9,6 +9,7 @@ export default function Register() {
 
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
+    const [telefone, setTelefone] = useState('');
     const [senha, setSenha] = useState('');
     const [repetirSenha, setRepetirSenha] = useState('');
 
@@ -16,6 +17,11 @@ export default function Register() {
     const handleRegister = () => {
         navigation.navigate('Login');
     }
+
+    const handleAvancar = () => {
+        navigation.navigate('Home');
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.leftPainel}>
@@ -39,6 +45,13 @@ export default function Register() {
                         keyboardType="email-address"
                     />
                     <AnimatedInput
+                        label="Telefone"
+                        iconName="phone"
+                        value={telefone}
+                        onChangeText={setTelefone}
+                        keyboardType="numeric"
+                    />
+                    <AnimatedInput
                         label="Senha"
                         iconName="lock"
                         value={senha}
@@ -53,7 +66,7 @@ export default function Register() {
                         secureTextEntry
                     />
 
-                    <TouchableOpacity style={styles.btnAvancar}>
+                    <TouchableOpacity style={styles.btnAvancar} onPress={handleAvancar}>
                         <Text style={styles.btnText}>Avançar</Text>
                     </TouchableOpacity>
 

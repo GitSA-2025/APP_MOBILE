@@ -14,6 +14,11 @@ export default function Login() {
     const handleRegister = () => {
         navigation.navigate('Register');
     }
+
+    const handleAvancar = () => {
+        navigation.navigate('Home');
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.leftPainel}>
@@ -40,7 +45,7 @@ export default function Login() {
                     <Text style={styles.linkText}>Esqueci a senha.</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.btnAvancar}>
+                <TouchableOpacity style={styles.btnAvancar} onPress={handleAvancar}>
                     <Text style={styles.btnText}>Avançar</Text>
                 </TouchableOpacity>
 
