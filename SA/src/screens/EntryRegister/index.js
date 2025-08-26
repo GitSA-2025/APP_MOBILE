@@ -3,6 +3,7 @@ import styles from './styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AnimatedInput from '../../components/AnimatedInput';
 import { useState, useEffect } from 'react';
+import api from '../../api/api';
 
 export default function EntryRegister() {
     const [nome, setNome] = useState('');
@@ -71,7 +72,7 @@ export default function EntryRegister() {
                 <View style={styles.painel}>
 
                     <View style={styles.header}>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={navigator.Back}>
                             <Ionicons name="chevron-back-outline" size={24} color="black" />
                         </TouchableOpacity>
                         <Text style={styles.headerTitle}>Registro de entrada</Text>
