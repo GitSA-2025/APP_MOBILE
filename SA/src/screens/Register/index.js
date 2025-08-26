@@ -1,11 +1,25 @@
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import styles from './styles';
 import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import api from '../../api/api';
 
 import AnimatedInput from '../../components/AnimatedInput';
+
 export default function Register() {
     const navigation = useNavigation();
+
+    async function cadastro(nome, email, telefone, senha) {
+        const dados = { nome, email, telefone, senha };
+
+        try {
+            const res = await api.post('/api/mobile/app/cadastrar', dados);
+            return res.data;
+        } catch (err) {
+            console.error('Erro ao cadastrar:', err.response?.data || err.message);
+            throw err;
+        }
+    }
 
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
@@ -13,24 +27,42 @@ export default function Register() {
     const [senha, setSenha] = useState('');
     const [repetirSenha, setRepetirSenha] = useState('');
 
-
     const handleRegister = () => {
         navigation.navigate('Login');
-    }
+    };
 
-    const handleAvancar = () => {
-        navigation.navigate('Home');
-    }
+    const handleAvancar = async () => {
+        if (!nome || !email || !telefone || !senha || !repetirSenha) {
+            Alert.alert('Atenção', 'Preencha todos os campos!');
+            return;
+        }
+
+        if (senha !== repetirSenha) {
+            Alert.alert('Erro', 'As senhas não coincidem!');
+            return;
+        }
+
+        try {
+            await cadastro(nome, email, telefone, senha);
+            Alert.alert('Sucesso', 'Cadastro realizado com sucesso! Faça a verificação de 2 fatores.');
+            navigation.navigate('TwoFA', { email });
+        } catch (err) {
+            Alert.alert('Erro', 'Não foi possível realizar o cadastro. Tente novamente.');
+        }
+    };
 
     return (
         <View style={styles.container}>
             <View style={styles.leftPainel}>
                 <Text style={styles.title}>Olá, seja bem-vindo(a) novo usuário!</Text>
-                <Text style={styles.subTitle}>Crie a sua conta nova no SA para continuar e utilizar as funcionalidades do APP!</Text>
+                <Text style={styles.subTitle}>
+                    Crie a sua conta nova no SA para continuar e utilizar as funcionalidades do APP!
+                </Text>
             </View>
             <ScrollView>
                 <View style={styles.rightPainel}>
                     <Text style={styles.titleLogin}>Crie a sua conta</Text>
+                    
                     <AnimatedInput
                         label="Nome"
                         iconName="account"
@@ -70,7 +102,10 @@ export default function Register() {
                         <Text style={styles.btnText}>Avançar</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={[styles.btnLinkText, { alignSelf: 'center', marginTop: 16 }]} onPress={handleRegister}>
+                    <TouchableOpacity
+                        style={[styles.btnLinkText, { alignSelf: 'center', marginTop: 16 }]}
+                        onPress={handleRegister}
+                    >
                         <Text style={styles.linkText}>Já possuo login.</Text>
                     </TouchableOpacity>
                 </View>

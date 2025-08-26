@@ -1,16 +1,66 @@
-import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Image, Alert } from 'react-native';
 import styles from './styles';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import AnimatedInput from '../../components/AnimatedInput';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function EntryRegister() {
     const [nome, setNome] = useState('');
-    const [tipoPessoal, setTipoPessoa] = useState('');
+    const [tipoPessoa, setTipoPessoa] = useState('');
     const [cpf, setCpf] = useState('');
     const [data, setData] = useState('');
     const [hrEntrada, setHrEntrada] = useState('');
     const [placa, setPlaca] = useState('');
+
+    function getDataHoraAtual() {
+        const now = new Date();
+
+        const dia = String(now.getDate()).padStart(2, '0');
+        const mes = String(now.getMonth() + 1).padStart(2, '0');
+        const ano = now.getFullYear();
+        const dataFormatada = `${dia}/${mes}/${ano}`;
+
+
+        const horas = String(now.getHours()).padStart(2, '0');
+        const minutos = String(now.getMinutes()).padStart(2, '0');
+        const segundos = String(now.getSeconds()).padStart(2, '0');
+        const horaFormatada = `${horas}:${minutos}:${segundos}`;
+
+        return { dataFormatada, horaFormatada };
+    }
+
+    useEffect(() => {
+        const { dataFormatada, horaFormatada } = getDataHoraAtual();
+        setData(dataFormatada);
+        setHrEntrada(horaFormatada);
+    }, []);
+
+    async function registrar(nome, tipoPessoa, cpf, placa) {
+        const dados = { nome, tipoPessoa, cpf, placa };
+
+        try {
+            const res = await api.post('/api/mobile/app/criarRegistroEntrada', dados);
+            return res.data;
+        } catch (err) {
+            console.error('Erro ao cadastrar:', err.response?.data || err.message);
+            throw err;
+        }
+    }
+
+    const handleSalvar = async () => {
+        if (!nome || !cpf || !tipoPessoa) {
+            Alert.alert('Atenção', 'Preencha todos os campos obrigatórios!');
+            return;
+        }
+
+        try {
+            await registrar(nome, tipoPessoa, cpf, placa);
+            Alert.alert('Sucesso', 'Registro salvo com sucesso! Retornando para tela inicial.');
+            navigation.navigate('Home');
+        } catch (err) {
+            Alert.alert('Erro', 'Não foi possível realizar o registro. Tente novamente.');
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -40,7 +90,7 @@ export default function EntryRegister() {
                             <AnimatedInput
                                 label="Selecione o tipo de pessoa"
                                 iconName="account-group"
-                                value={tipoPessoal}
+                                value={tipoPessoa}
                                 onChangeText={setTipoPessoa}
                             />
                             <AnimatedInput
@@ -54,12 +104,14 @@ export default function EntryRegister() {
                                 iconName="calendar"
                                 value={data}
                                 onChangeText={setData}
+                                editable={false}
                             />
                             <AnimatedInput
                                 label="Horário da Entrada"
                                 iconName="clock-time-four-outline"
                                 value={hrEntrada}
                                 onChangeText={setHrEntrada}
+                                editable={false}
                             />
                             <AnimatedInput
                                 label="Placa do Veículo"
@@ -75,7 +127,7 @@ export default function EntryRegister() {
                             </TouchableOpacity>
                             <Text style={styles.photoText}>Foto de identificação</Text>
 
-                            <TouchableOpacity style={styles.btnSalvar}>
+                            <TouchableOpacity style={styles.btnSalvar} onPress={handleSalvar}>
                                 <Text style={styles.btnText}>Salvar</Text>
                             </TouchableOpacity>
                         </View>
