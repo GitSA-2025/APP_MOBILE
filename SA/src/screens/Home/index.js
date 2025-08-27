@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Text,
   View,
@@ -10,6 +10,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { Feather, MaterialCommunityIcons, FontAwesome5, Entypo } from '@expo/vector-icons';
 import styles from './styles';
+import api from '../../api/api';
 
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -112,14 +113,30 @@ const Header = ({ onMenuPress }) => {
 };
 
 
+
+
 export default function Home() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
+  const [entradas, setEntradas] = useState([]);
   const navigation = useNavigation();
 
   const handlerEntryRegister = () => {
     navigation.navigate('EntryRegister');
   };
+
+  useEffect(() => {
+    const fetchEntradas = async () => {
+      try {
+        const res = await api.get('/api/mobile/app/exibirEntradas');
+        setEntradas(res.data);
+        console.log(res.data);
+      } catch (err) {
+        console.error('Erro ao carregar entradas:', err.response?.data);
+      }
+    };
+
+    fetchEntradas();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -130,13 +147,20 @@ export default function Home() {
         <ScrollView contentContainerStyle={styles.contentContainer}>
           <View style={styles.registrosHeader}>
             <Text style={styles.registrosTitle}>Registros</Text>
-            <TouchableOpacity style={styles.createEntryButton} activeOpacity={0.8} onPress={handlerEntryRegister}>
+            <TouchableOpacity
+              style={styles.createEntryButton}
+              activeOpacity={0.8}
+              onPress={handlerEntryRegister}
+            >
               <Feather name="plus" size={20} color="white" />
-              <Text style={styles.createEntryButtonText}>Criar registro de entrada</Text>
+              <Text style={styles.createEntryButtonText}>
+                Criar registro de entrada
+              </Text>
             </TouchableOpacity>
           </View>
 
           <View style={styles.tableContainer}>
+            {/* Cabeçalho */}
             <View style={styles.tableHeaderRow}>
               <Text style={[styles.tableHeaderCell, styles.cellDate]}>Data</Text>
               <Text style={[styles.tableHeaderCell, styles.cellName]}>Nome</Text>
@@ -147,42 +171,54 @@ export default function Home() {
               <Text style={[styles.tableHeaderCell, styles.cellEdit]}></Text>
             </View>
 
-            <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, styles.cellDate]}>16/03/2026</Text>
-              <Text style={[styles.tableCell, styles.cellName, { color: 'green' }]}>José Silva</Text>
-              <View style={[styles.statusBadge, styles.statusLiberado]}>
-                <Feather name="check" size={14} color="white" />
-                <Text style={styles.statusText}>Liberado</Text>
-              </View>
-              <Text style={[styles.tableCell, styles.cellTime]}>08:10:27</Text>
-              <Text style={[styles.tableCell, styles.cellTime]}>21:01:40</Text>
-              <Text style={[styles.tableCell, styles.cellPlate]}>Ñ se aplica</Text>
-              <TouchableOpacity style={styles.editButton}>
-                <Feather name="edit-2" size={14} color="white" />
-                <Text style={styles.editButtonText}>Editar</Text>
-              </TouchableOpacity>
-            </View>
+            {/* Linhas dinâmicas */}
+            {entradas.map((item, index) => (
+              <View key={index} style={styles.tableRow}>
+                <Text style={[styles.tableCell, styles.cellDate]}>{item.data}</Text>
+                <Text
+                  style={[
+                    styles.tableCell,
+                    styles.cellName
+                  ]}
+                >
+                  {item.nome}
+                </Text>
 
-            <View style={styles.tableRow}>
-              <Text style={[styles.tableCell, styles.cellDate]}>16/03/2026</Text>
-              <Text style={[styles.tableCell, styles.cellName, { color: 'orange' }]}>Rosangela</Text>
-              <View style={[styles.statusBadge, styles.statusPendente]}>
-                <Feather name="message-circle" size={14} color="white" />
-                <Text style={styles.statusText}>Pendente</Text>
+                <View
+                  style={[
+                    styles.statusBadge,
+                    item.status === 'Liberado'
+                      ? styles.statusLiberado
+                      : styles.statusPendente,
+                  ]}
+                >
+                  <Feather
+                    name={item.status === 'Liberado' ? 'check' : 'message-circle'}
+                    size={14}
+                    color="white"
+                  />
+                  <Text style={styles.statusText}>{item.status}</Text>
+                </View>
+
+                <Text style={[styles.tableCell, styles.cellTime]}>
+                  {item.hrentrada || '-'}
+                </Text>
+                <Text style={[styles.tableCell, styles.cellTime]}>
+                  {item.hrsaida || '-'}
+                </Text>
+                <Text style={[styles.tableCell, styles.cellPlate]}>
+                  {item.placa || 'Ñ se aplica'}
+                </Text>
+
+                <TouchableOpacity style={styles.editButton}>
+                  <Feather name="edit-2" size={14} color="white" />
+                  <Text style={styles.editButtonText}>Editar</Text>
+                </TouchableOpacity>
               </View>
-              <Text style={[styles.tableCell, styles.cellTime]}>-</Text>
-              <Text style={[styles.tableCell, styles.cellTime]}>-</Text>
-              <Text style={[styles.tableCell, styles.cellPlate]}>Ñ se aplica</Text>
-              <TouchableOpacity style={styles.editButton}>
-                <Feather name="edit-2" size={14} color="white" />
-                <Text style={styles.editButtonText}>Editar</Text>
-              </TouchableOpacity>
-            </View>
+            ))}
           </View>
         </ScrollView>
       </View>
     </SafeAreaView>
   );
 }
-
-

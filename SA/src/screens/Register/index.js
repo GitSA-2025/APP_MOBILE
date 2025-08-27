@@ -14,6 +14,7 @@ export default function Register() {
 
         try {
             const res = await api.post('/api/mobile/app/cadastrar', dados);
+            console.log(res.data);
             return res.data;
         } catch (err) {
             console.error('Erro ao cadastrar:', err.response?.data || err.message);

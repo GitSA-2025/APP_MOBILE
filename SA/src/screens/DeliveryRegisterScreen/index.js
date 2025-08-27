@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Text,
     View,
@@ -114,8 +114,23 @@ const Header = ({ onMenuPress }) => {
 
 export default function DeliveryRegisterScreen() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [entregas, setEntregas] = useState([]);
 
     const navigation = useNavigation();
+
+    useEffect(() => {
+        const fetchEntregas = async () => {
+            try {
+                const res = await api.get('/api/mobile/app/exibirEntregas');
+                setEntregas(res.data);
+                console.log(res.data);
+            } catch (err) {
+                console.error('Erro ao carregar entregras:', err.response?.data);
+            }
+        };
+
+        fetchEntregas();
+    }, []);
 
     const handlerDeliveryRegister = () => {
         navigation.navigate('DeliveryRegister');
@@ -147,21 +162,25 @@ export default function DeliveryRegisterScreen() {
                             <Text style={[styles.tableHeaderCell, styles.cellEdit]}></Text>
                         </View>
 
-                        <View style={styles.tableRow}>
-                            <Text style={[styles.tableCell, styles.cellDate]}>16/03/2026</Text>
-                            <Text style={[styles.tableCell, styles.cellName, { color: 'green' }]}>José Silva</Text>
-                            <View style={[styles.statusBadge, styles.statusLiberado]}>
-                                <Feather name="check" size={14} color="white" />
-                                <Text style={styles.statusText}>Liberado</Text>
+                        {entregas.map((item, index) => (
+                            <View key={index} style={styles.tableRow}>
+                                <Text style={[styles.tableCell, styles.cellDate]}>{item.data}</Text>
+                                <Text style={[styles.tableCell, styles.cellName]}>{item.nome}</Text>
+                                <View style={[styles.statusBadge, styles.statusLiberado]}>
+                                    <Feather name="check" size={14} color="white" />
+                                    <Text style={styles.statusText}>Liberado</Text>
+                                </View>
+                                <Text style={[styles.tableCell, styles.cellTime]}>{item.hrentrada}</Text>
+                                <Text style={[styles.tableCell, styles.cellTime]}>Bauducco</Text>
+                                <Text style={[styles.tableCell, styles.cellPlate]}>AB1D23</Text>
+                                <TouchableOpacity style={styles.editButton}>
+                                    <Feather name="edit-2" size={14} color="white" />
+                                    <Text style={styles.editButtonText}>Editar</Text>
+                                </TouchableOpacity>
                             </View>
-                            <Text style={[styles.tableCell, styles.cellTime]}>08:10:27</Text>
-                            <Text style={[styles.tableCell, styles.cellTime]}>Bauducco</Text>
-                            <Text style={[styles.tableCell, styles.cellPlate]}>AB1D23</Text>
-                            <TouchableOpacity style={styles.editButton}>
-                                <Feather name="edit-2" size={14} color="white" />
-                                <Text style={styles.editButtonText}>Editar</Text>
-                            </TouchableOpacity>
-                        </View>
+                        ))}
+
+
                     </View>
                 </ScrollView>
             </View>

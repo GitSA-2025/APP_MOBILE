@@ -5,38 +5,49 @@ import AnimatedInput from '../../components/AnimatedInput';
 import { useState, useEffect } from 'react';
 import api from '../../api/api';
 import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/native';
 
 export default function EntryRegister() {
+
+    const route = useRoute();
+
     const [nome, setNome] = useState('');
     const [tipoPessoa, setTipoPessoa] = useState('');
     const [cpf, setCpf] = useState('');
     const [data, setData] = useState('');
     const [hrEntrada, setHrEntrada] = useState('');
+    const [hrSaida, setHrSaida] = useState('');
     const [placa, setPlaca] = useState('');
+
+    const { idRegister } = route.params;
 
     const navigation = useNavigation();
 
     function getDataHoraAtual() {
         const now = new Date();
 
-        const dia = String(now.getDate()).padStart(2, '0');
-        const mes = String(now.getMonth() + 1).padStart(2, '0');
-        const ano = now.getFullYear();
-        const dataFormatada = `${dia}/${mes}/${ano}`;
-
-
         const horas = String(now.getHours()).padStart(2, '0');
         const minutos = String(now.getMinutes()).padStart(2, '0');
         const segundos = String(now.getSeconds()).padStart(2, '0');
         const horaFormatada = `${horas}:${minutos}:${segundos}`;
 
-        return { dataFormatada, horaFormatada };
+        return { horaFormatada };
     }
 
     useEffect(() => {
-        const { dataFormatada, horaFormatada } = getDataHoraAtual();
-        setData(dataFormatada);
-        setHrEntrada(horaFormatada);
+        const { horaFormatada } = getDataHoraAtual();
+        setHrSaida(horaFormatada);
+
+        const fetchRegistro = async () => {
+            try {
+                const res = await api.get('/api/mobile/app/exibirEntradas');
+                setEntradas(res.data);
+                console.log(res.data);
+            } catch (err) {
+                console.error('Erro ao carregar entradas:', err.response?.data);
+            }
+        };
+
     }, []);
 
     async function registrar(nome, tipo, cpf, placa) {
@@ -75,7 +86,7 @@ export default function EntryRegister() {
                 <View style={styles.painel}>
 
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={() => {navigator.navigate('Home');}}>
+                        <TouchableOpacity onPress={() => { navigator.navigate('Home'); }}>
                             <Ionicons name="chevron-back-outline" size={24} color="black" />
                         </TouchableOpacity>
                         <Text style={styles.headerTitle}>Registro de entrada</Text>
