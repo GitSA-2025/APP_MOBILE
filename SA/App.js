@@ -12,6 +12,7 @@ import DeliveryRegisterScreen from './src/screens/DeliveryRegisterScreen';
 import DeliveryRegister from './src/screens/DeliveryRegister';
 import QrCodeApproval from './src/screens/QrCodeApproval';
 import TwoFA from './src/screens/twoFA';
+import EditEntryRegister from './src/screens/EditEntryRegister';
 
 const Stack = createStackNavigator();
 
@@ -27,6 +28,7 @@ function App() {
         <Stack.Screen name="DeliveryRegister" component={DeliveryRegister} options={{ headerShown: false }} />
         <Stack.Screen name="QrCodeApproval" component={QrCodeApproval} options={{ headerShown: false }} />
         <Stack.Screen name="TwoFA" component={TwoFA} options={{ headerShown: false }} />
+        <Stack.Screen name="EditEntryRegister" component={EditEntryRegister} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

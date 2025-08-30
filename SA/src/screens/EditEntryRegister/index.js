@@ -7,7 +7,7 @@ import api from '../../api/api';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/native';
 
-export default function EntryRegister() {
+export default function EditEntryRegister() {
 
     const route = useRoute();
 
@@ -19,7 +19,7 @@ export default function EntryRegister() {
     const [hrSaida, setHrSaida] = useState('');
     const [placa, setPlaca] = useState('');
 
-    const { idRegister } = route.params;
+    const { entry } = route.params;
 
     const navigation = useNavigation();
 
@@ -38,26 +38,22 @@ export default function EntryRegister() {
         const { horaFormatada } = getDataHoraAtual();
         setHrSaida(horaFormatada);
 
-        const fetchRegistro = async () => {
-            try {
-                const res = await api.get('/api/mobile/app/exibirEntradas');
-                setEntradas(res.data);
-                console.log(res.data);
-            } catch (err) {
-                console.error('Erro ao carregar entradas:', err.response?.data);
-            }
-        };
-
+        setNome(entry.nome);
+        setTipoPessoa(entry.tipo);
+        setCpf(entry.cpf);
+        setData(entry.data);
+        setPlaca(entry.placa);
+        setHrEntrada(entry.hrentrada);
     }, []);
 
-    async function registrar(nome, tipo, cpf, placa) {
-        const dados = { nome, tipo, cpf, placa };
+    async function editar(idRegiter, nome, tipo, cpf, placa) {
+        const dados = {nome, tipo, cpf, placa, };
 
         try {
-            const res = await api.post('/api/mobile/app/criarRegistroEntrada', dados);
+            const res = await api.post(`editarRegistroEntrada/${idRegister}`, dados);
             return res.data;
         } catch (err) {
-            console.error('Erro ao cadastrar:', err.response?.data || err.message);
+            console.error('Erro ao editar:', err.response?.data || err.message);
             throw err;
         }
     }
@@ -69,11 +65,11 @@ export default function EntryRegister() {
         }
 
         try {
-            await registrar(nome, tipoPessoa, cpf, placa);
-            Alert.alert('Sucesso', 'Registro salvo com sucesso! Retornando para tela inicial.');
+            await editar(entry.idRegister, nome, tipoPessoa, cpf, placa);
+            Alert.alert('Sucesso', 'Registro editado com sucesso! Retornando para tela inicial.');
             navigation.navigate('Home');
         } catch (err) {
-            Alert.alert('Erro', 'Não foi possível realizar o registro. Tente novamente.');
+            Alert.alert('Erro', 'Não foi possível realizar o edição. Tente novamente.');
         }
     };
 
@@ -126,6 +122,13 @@ export default function EntryRegister() {
                                 iconName="clock-time-four-outline"
                                 value={hrEntrada}
                                 onChangeText={setHrEntrada}
+                                editable={false}
+                            />
+                            <AnimatedInput
+                                label="Horário da Entrada"
+                                iconName="clock-time-four-outline"
+                                value={hrSaida}
+                                onChangeText={setHrSaida}
                                 editable={false}
                             />
                             <AnimatedInput

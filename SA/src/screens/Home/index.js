@@ -210,7 +210,7 @@ export default function Home() {
                   {item.placa || 'Ñ se aplica'}
                 </Text>
 
-                <TouchableOpacity style={styles.editButton}>
+                <TouchableOpacity style={styles.editButton} onPress={() => {navigation.navigate('EditEntryRegister', { entry: item });}}>
                   <Feather name="edit-2" size={14} color="white" />
                   <Text style={styles.editButtonText}>Editar</Text>
                 </TouchableOpacity>
