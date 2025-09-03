@@ -11,6 +11,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Feather, MaterialCommunityIcons, FontAwesome5, Entypo } from '@expo/vector-icons';
 import styles from './styles';
 import api from '../../api/api';
+import SearchInput from '../../components/SearchInput';
 
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -94,15 +95,7 @@ const Header = ({ onMenuPress }) => {
 
       <Text style={styles.headerTitle}>Sistema de Acesso</Text>
 
-      <View style={styles.searchBox}>
-        <Feather name="search" size={20} color="#2B3D52" />
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Buscar"
-          placeholderTextColor="#2B3D52"
-          underlineColorAndroid="transparent"
-        />
-      </View>
+      <SearchInput/>
 
       <View style={styles.logoContainer}>
         <Text style={styles.kozzyText}>KOZZY</Text>
